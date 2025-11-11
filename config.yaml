@@ -1,0 +1,17 @@
+data:
+  input_dir: "data/raw"
+  output_dir: "data/results"
+algorithms:
+  - clahe
+  - dcp
+  - ridcp
+clahe:
+  clip_limit: 2.0
+  tile_grid_size: [8, 8]
+dcp:
+  patch_size: 15
+  omega: 0.95
+ridcp:
+  patch_size: 15
+  omega: 0.95
+  refinement: true
