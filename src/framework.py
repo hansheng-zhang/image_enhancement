@@ -2,7 +2,7 @@ import os
 from src.algorithms import clahe, dcp, ridcp
 from src.utils import save_image
 
-class ImageEnhancementFramework:
+class ImageDahazingFramework:
     def __init__(self, config):
         self.config = config
         self.methods = {
