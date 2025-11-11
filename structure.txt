@@ -1,0 +1,33 @@
+image_dehazing/
+│
+├── README.md                     # 项目说明
+├── requirements.txt              # 依赖库（numpy, opencv-python, matplotlib, skimage等）
+├── config.yaml                   # 各算法与路径配置
+│
+├── data/
+│   ├── raw/                      # 原始图像数据
+│   ├── processed/                # 预处理后数据
+│   └── results/                  # 输出结果（各算法增强图像）
+│
+├── src/
+│   ├── __init__.py
+│   ├── dataset.py                # 数据加载与预处理
+│   ├── algorithms/               # 三种算法模块
+│   │   ├── __init__.py
+│   │   ├── clahe.py
+│   │   ├── dcp.py
+│   │   └── ridcp.py
+│   ├── framework.py              # 统一算法调度与运行框架
+│   ├── metrics.py                # PSNR, SSIM等指标计算
+│   ├── utils.py                  # 工具函数（日志、计时、路径等）
+│   └── evaluate.py               # 批量测试与指标统计
+│
+├── notebooks/
+│   ├── demo.ipynb                # 可视化展示与结果分析
+│
+├── report/
+│   ├── main.tex                  # ICASSP模板论文主文件
+│   ├── figures/                  # 图像与可视化
+│   └── references.bib
+│
+└── main.py                       # 主入口脚本（统一运行各算法）
