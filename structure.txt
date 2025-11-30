@@ -6,24 +6,11 @@ image_dehazing/
 │
 ├── data/
 │   ├── raw/
-│   │   ├── ohaze/
-│   │   │   ├── hazy/          # 有雾图像
-│   │   │   └── gt/            # 对应无雾Ground Truth
-│   │   ├── ihaze/
-│   │   │   ├── hazy/
-│   │   │   └── gt/
+│   │   ├── lol_high/
+│   │   ├── lol_low/
 │   │   └── iphone/
-│   │       ├── hazy/          # 自拍的带雾图像
-│   │       └── gt/            # 若有后期手动增强图，可放这里；没有则留空
-│   │
 │   ├── processed/
-│   │   ├── train/             # 模型调试、算法参数调节
-│   │   ├── test/              # 最终对比评估
-│   │
 │   └── results/
-│       ├── clahe/
-│       ├── dcp/
-│       └── ridcp/
 |
 ├── src/
 │   ├── __init__.py
@@ -31,8 +18,7 @@ image_dehazing/
 │   ├── algorithms/               # 三种算法模块
 │   │   ├── __init__.py
 │   │   ├── clahe.py
-│   │   ├── dcp.py
-│   │   └── ridcp.py
+│   │   └── retinex.py
 │   ├── framework.py              # 统一算法调度与运行框架
 │   ├── metrics.py                # PSNR, SSIM等指标计算
 │   ├── utils.py                  # 工具函数（日志、计时、路径等）
