@@ -1,17 +1,19 @@
 data:
-  input_dir: "data/raw/lol"
-  output_dir: "data/results/lol"
+  input_dir: "data/raw/algo_test"
+  output_dir: "data/results/algo_test"
 algorithms:
   - clahe
-  # - dcp
-  # - ridcp
+  - retinex
+
 clahe:
   clip_limit: 2.0
   tile_grid_size: [8, 8]
-dcp:
-  patch_size: 15
-  omega: 0.95
-ridcp:
-  patch_size: 15
-  omega: 0.95
-  refinement: true
+
+retinex:
+  sigma_list: [15, 80, 250]
+  G: 5.0
+  b: 25.0
+  alpha: 125.0
+  beta: 46.0
+  low_clip: 0.01
+  high_clip: 0.99

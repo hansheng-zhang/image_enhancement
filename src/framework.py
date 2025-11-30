@@ -1,18 +1,18 @@
 import os
-from src.algorithms import clahe, dcp, ridcp
+from src.algorithms import clahe, retinex
 from src.utils import save_image
+from tqdm import tqdm
 
 class ImageEnhancementFramework:
     def __init__(self, config):
         self.config = config
         self.methods = {
             "clahe": clahe.apply_clahe,
-            "dcp": dcp.apply_dcp,
-            "ridcp": ridcp.apply_ridcp
+            "retinex": retinex.apply_retinex
         }
 
     def run(self, dataset):
-        for path, img in dataset:
+        for path, img in tqdm(dataset, desc="Processing Images"):
             name = os.path.basename(path)
             for method in self.config["algorithms"]:
                 func = self.methods[method]
