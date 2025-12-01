@@ -1,5 +1,6 @@
 data:
   input_dir: "data/raw/algo_test"
+  gt_dir: "data/raw/algo_test_gt"
   output_dir: "data/results/algo_test"
 algorithms:
   - clahe
