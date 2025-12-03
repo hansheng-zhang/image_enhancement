@@ -1,0 +1,30 @@
+data:
+  processed_dir: "data/processed"
+  results_dir: "data/results"
+  datasets:
+    - name: "ohaze"
+      split: "test"
+    - name: "ihaze"
+      split: "test"
+
+# algorithms:
+#   - name: "clahe"
+#     params:
+#       tile_grid_size: [8, 8]
+#       clip_limit: 2.0
+
+algorithms:
+  - name: "dcp"
+    params:
+      patch_size: 15
+      omega: 0.95
+      t0: 0.1
+      use_guided_filter: true
+      guided_radius: 40
+      guided_eps: 0.001
+
+
+metrics:
+  - "psnr"
+  - "ssim"
+  - "deltaE00"
