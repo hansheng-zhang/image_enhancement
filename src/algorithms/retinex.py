@@ -29,7 +29,7 @@ def color_restoration(img, alpha, beta):
     color_restoration = beta * (np.log10(alpha * img) - np.log10(img_sum))
     return color_restoration
 
-def simplest_color_balance(img, low_clip, high_clip):
+def simplest_color_balance(img, low_clip, high_clip, stretch=False):
     """
     Simulate the simplestColorBalance from the reference, 
     but using numpy percentiles for efficiency and adding stretching 
@@ -44,15 +44,16 @@ def simplest_color_balance(img, low_clip, high_clip):
         
         c = np.clip(c, low_val, high_val)
         
-        # Stretch to 0-255
-        denom = high_val - low_val
-        if denom == 0: denom = 1e-6
-        c = (c - low_val) / denom * 255.0
+        if stretch:
+            # Stretch to 0-255
+            denom = high_val - low_val
+            if denom == 0: denom = 1e-6
+            c = (c - low_val) / denom * 255.0
         out[:, :, i] = c
         
     return out
 
-def apply_retinex(img, sigma_list=[15, 80, 250], G=5.0, b=25.0, alpha=125.0, beta=46.0, low_clip=0.01, high_clip=0.99):
+def apply_retinex(img, sigma_list=[15, 80, 250], G=5.0, b=25.0, alpha=125.0, beta=46.0, low_clip=0.01, high_clip=0.99, stretch_color_balance=False):
     """
     MSRCR: Multi-Scale Retinex with Color Restoration
     
@@ -96,7 +97,7 @@ def apply_retinex(img, sigma_list=[15, 80, 250], G=5.0, b=25.0, alpha=125.0, bet
     img_msrcr = np.clip(img_msrcr, 0, 255)
     
     # Apply Simplest Color Balance (Percentile Clipping & Stretching)
-    img_msrcr = simplest_color_balance(img_msrcr, low_clip, high_clip)
+    img_msrcr = simplest_color_balance(img_msrcr, low_clip, high_clip, stretch=stretch_color_balance)
     
     img_msrcr = np.clip(img_msrcr, 0, 255).astype(np.uint8)
     
