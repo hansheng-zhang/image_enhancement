@@ -19,3 +19,7 @@ retinex:
   low_clip: 0.01
   high_clip: 0.99
   stretch_color_balance: False
+
+analysis:
+  metrics_file: "data/results/lol/metrics.csv"
+  output_dir: "analysis_results/lol"
