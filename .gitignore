@@ -212,3 +212,4 @@ data/
 *.docx
 .agent/
 Retinex-master/
+analysis_results/
