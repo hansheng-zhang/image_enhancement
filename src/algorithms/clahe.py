@@ -3,11 +3,7 @@ import cv2
 import numpy as np
 
 def dehaze(img_bgr, tile_grid_size=(8, 8), clip_limit=2.0, **kwargs):
-    """
-    使用 CLAHE 在 LAB 空间的 L 通道上做对比度增强。
-    img_bgr: uint8 BGR 图像 (OpenCV 读入)
-    返回: uint8 BGR
-    """
+
     lab = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
     l, a, b = cv2.split(lab)
 
