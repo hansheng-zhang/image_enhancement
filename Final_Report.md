@@ -2,19 +2,17 @@
 
 ## 1. Introduction and Motivation
 
-Images captured under low-light conditions often suffer from poor visibility, low contrast, and amplified noise. This is particularly challenging for consumer smartphones and edge devices where hardware sensor size is limited. While modern deep learning methods have achieved impressive capabilities in low-light enhancement, they are often computationally demanding and difficult to deploy in real-time or resource-constrained environments.
+Images captured under low-light conditions often suffer from poor visibility, low contrast, and amplified noise. This is challenging for consumer smartphones and edge devices, because hardware sensor size is limited. While modern deep learning methods have achieved impressive capabilities in low-light enhancement, they are often computationally demanding and difficult to deploy in real-time or resource-constrained environments.
 
-The motivation of this project is to evaluate and compare classical, lightweight image enhancement algorithms—specifically **CLAHE (Contrast Limited Adaptive Histogram Equalization)** and **Retinex (MSRCR)**—to understand their trade-offs between image quality, computational efficiency, and robustness in real-world scenarios. Unlike deep neural networks that function as black boxes, these classical methods offer interpretability and tunable parameters that are essential for specific industrial applications.
+The motivation of this project is to evaluate and compare classical, lightweight image enhancement algorithms, **CLAHE (Contrast Limited Adaptive Histogram Equalization)** and **Retinex (MSRCR)**, to understand their trade-offs between image quality, computational efficiency, and robustness in real-world scenarios. Unlike deep neural networks that function as black boxes, these classical methods are more interpretable and tunable, which are essential for industrial applications.
 
 ## 2. Related Works
 
-Low-light image enhancement has been extensively studied. Early approaches focused on histogram manipulation, such as **Gamma Correction**, which applies a global non-linear mapping. However, global methods often over-enhance bright regions while failing to recover details in dark areas.
+Many deep learning-based low-light enhancement methods have been proposed in recent years. **Zero-DCE** predicts pixel-wise curve parameters to adjust exposure without relying on paired training data. **EnlightenGAN** uses an unpaired GAN architecture to enhance images in a fully unsupervised way and generalizes effectively across various scenes. Decomposition models such as **KinD** further separate reflectance and illumination components, incorporating Retinex theory into a learnable framework.
 
-**Adaptive Histogram Equalization (AHE)** addresses this by operating locally, but it tends to amplify noise in homogeneous regions. **CLAHE** improves upon AHE by clipping the histogram to limit noise amplification, making it a standard efficient baseline.
+Classical methods remain widely utilized. **Gamma correction** imposes a global nonlinear mapping, though it often excessively brightens highlights while leaving shadows dark. **Homomorphic filtering** operates in the frequency domain to reduce illumination variations, but it relies on filter design and can distort details. **Wavelet-based enhancement** and **tone-mapping** approaches have also been explored, though they typically require careful parameter tuning.
 
-**Retinex Theory**, proposed by Land, models an image as a product of illumination and reflectance. Algorithms like Single-Scale Retinex (SSR) and Multi-Scale Retinex with Color Restoration (MSRCR) aim to estimate and remove the illumination component to recover the true reflectance.
-
-More recently, deep learning approaches like **Zero-DCE** and **RetinexNet** have set new benchmarks for quality. However, they require significant training data and computational power. Our study revisits classical methods to establish a strong baseline for performance-per-watt efficiency.
+Overall, there remains a need for simple, interpretable, and efficient approaches, especially when deployment resources are limited.
 
 ## 3. Method
 Overall Framework
@@ -47,7 +45,7 @@ An image $I(x,y)$ is modeled as $I(x,y) = R(x,y) \cdot L(x,y)$, where $R$ is ref
 3.  **Post-Processing**: Linearly scale the result to the $[0, 255]$ display range.
 
 #### Optimization for Real-World Images (Contrast Stretching)
-During experiments with iPhone photos, we observed that standard MSRCR output sometimes lacked "punch" or utilized a limited dynamic range. To address this, we implemented a linear contrast stretch (normalization) step as the final post-processing operation:
+During experiments with iPhone photos, we observed that the standard MSRCR output sometimes lacked sufficient contrast and visual impact. To address this, we implemented a linear contrast stretch (normalization) step as the final post-processing operation:
 ```python
 if stretch:
     # Stretch to 0-255 based on min/max intensity
@@ -55,14 +53,14 @@ if stretch:
     if denom == 0: denom = 1e-6
     c = (c - low_val) / denom * 255.0
 ```
-This simple heuristic ensures the enhanced image utilizes the full available bit-depth, which was found to differ significantly in visual quality for mobile photography compared to the LOL dataset.
+This simple method ensures the enhanced image has the full available bit-depth, which was found to differ significantly in visual quality for mobile photography compared to the LOL dataset.
 
 ## 4. Evaluations
 
 ### 4.1 Experimental Setup
 **Datasets:**
 1.  **LOL Dataset (v1)**: 500 paired low-light/normal-light images. Used for quantitative reference-based evaluation.
-2.  **Custom Smartphone Dataset (iPhone)**: ~20 real-world low-light images collected with an iPhone. Used for qualitative and no-reference evaluation.
+2.  **Custom Smartphone Dataset (iPhone)**: 13 real-world low-light images collected with an iPhone. Used for qualitative and no-reference evaluation.
 
 **Metrics:**
 *   **PSNR (Peak Signal-to-Noise Ratio)**: Measures pixel-level fidelity (Higher is better).
@@ -81,8 +79,8 @@ We evaluated the methods on the processed LOL dataset.
 | **Retinex** | **15.41** | **0.58** | 28.00 | 0.848 |
 
 **Findings:**
-*   **Fidelity**: Retinex significantly outperforms CLAHE in terms of PSNR (+6.3 dB) and SSIM (+0.23). This indicates MSRCR is much more effective at recovering the underlying ground truth signal in extreme low-light conditions.
-*   **Speed**: CLAHE is extremely fast (2ms), making it suitable for 60fps real-time video processing. Retinex is computationally heavier (~0.85s), which may require optimization for real-time use.
+*   **Fidelity**: Retinex is better than CLAHE in terms of PSNR (+6.3 dB) and SSIM (+0.23). This indicates MSRCR is much more effective at recovering the underlying ground truth signal in extreme low-light conditions.
+*   **Speed**: CLAHE is extremely fast (2ms), making it suitable for 60fps real-time video processing. Retinex requires more time (~0.85s), which may require optimization for real-time use.
 
 #### B. iPhone Dataset Analysis (Real-World Unpaired)
 We evaluated performance on high-resolution smartphone photos. We compared two versions of Retinex: standard and with the **Contrast Stretch** optimization enabled.
@@ -134,15 +132,15 @@ The following plots visualize the statistical distribution of our metrics.
 ![Runtime Comparison](report_images/barplot_runtime_sec_no_gt.png)
 
 Based on visual inspection of the results:
-*   **CLAHE**: Effectively improves local contrast and visibility. However, it tends to amplify noise in the darkest regions and can sometimes produce a "flat" look if the clip limit is too high. It preserves edges well but struggles to recover color information in near-black areas.
-*   **Retinex**: Recovers significantly more brightness and color details from the shadows. The images look much brighter and vivid. However, it suffers from the "halo effect" around high-contrast edges and can lead to unnatural color shifts if the Color Restoration Function is not perfectly tuned.
+*   **CLAHE**: Effectively improves local contrast and visibility. However, it tends to amplify noise in the darkest regions and can sometimes produce a flat look if the clip limit is too high. It preserves edges well but cannot recover color information in near-black areas.
+*   **Retinex**: Recovers significantly more brightness and color details from the shadows. The images look much brighter and vivid. However, it has some "halo effect" around high-contrast edges and can lead to unnatural color shifts if the Color Restoration Function is not perfectly tuned.
 
 
 ## 5. Discussion
 
 Our results highlight a clear trade-off:
-1.  **Quality vs. Efficiency**: Retinex is the clear winner for restoration quality on the standard benchmark (LOL), recovering lost details that CLAHE misses. However, CLAHE is orders of magnitude faster (400x on iPhone data).
-2.  **Domain Sensitivity**: CLAHE performs surprisingly well on the iPhone dataset according to BRISQUE. This might be because modern smartphone sensors already apply some ISP processing, and CLAHE's gentle local contrast boost cooperates better with this pre-processed data than Retinex's heavy-handed physical model assumption.
+1.  **Quality vs. Efficiency**: Retinex is the clear winner for restoration quality on the standard benchmark (LOL), recovering lost details that CLAHE misses. However, CLAHE is much faster (400x on iPhone data).
+2.  **Domain Sensitivity**: CLAHE performs well on the iPhone dataset according to BRISQUE. This might be because modern smartphone sensors already apply some ISP processing, and CLAHE's gentle local contrast boost works better with this pre-processed data than Retinex's heavy-handed physical model assumption.
 3.  **Limitations**:
     *   **CLAHE**: Noise amplification in dark areas is a major issue.
     *   **Retinex**: High computational cost and susceptibility to halo artifacts.
@@ -150,7 +148,7 @@ Our results highlight a clear trade-off:
 ## 6. Future Work
 *   **Denoising Integration**: Integrating a denoising step (e.g., BM3D or Bilateral Filter) before CLAHE could mitigate noise amplification.
 *   **Optimization**: Retinex could be accelerated using GPU implementation (CUDA) or Fast Fourier Transform (FFT) for the convolution steps to make it viable for mobile applications.
-*   **Deep Learning on Edge**: Investigating lightweight CNNs (like Zero-DCE) that might offer the quality of Retinex with inference speeds closer to CLAHE.
+*   **Deep Learning on Edge**: Investigating lightweight CNNs (like Zero-DCE) that might work as good as Retinex with inference speeds closer to CLAHE.
 
 ## 7. Conclusion
-In this project, we successfully implemented and evaluated CLAHE and MSRCR Retinex for low-light image enhancement. Quantitative evaluation on the LOL dataset demonstrates that **Retinex offers superior restoration fidelity (15.41 dB PSNR)** compared to CLAHE (9.07 dB). However, **CLAHE demonstrates exceptional efficiency**, processing high-resolution iPhone images in 0.01 seconds, compared to 3.5 seconds for Retinex. For real-time mobile applications, CLAHE remains a pragmatic choice, while Retinex is better suited for offline post-processing where image quality is paramount.
+In this project, we successfully implemented and evaluated CLAHE and MSRCR Retinex for low-light image enhancement. Quantitative evaluation on the LOL dataset shows that **Retinex offers superior restoration fidelity (15.41 dB PSNR)** compared to CLAHE (9.07 dB). However, **CLAHE demonstrates exceptional efficiency**, processing high-resolution iPhone images in 0.01 seconds, compared to 3.5 seconds for Retinex. For real-time mobile applications, CLAHE remains a pragmatic choice, while Retinex is better for offline post-processing.
